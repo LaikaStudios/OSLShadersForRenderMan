@@ -3,6 +3,8 @@ Siggraph 2022 Course Supplementary Material
 
 [Open Shading Language](https://github.com/AcademySoftwareFoundation/OpenShadingLanguage) is a project of the [Academy Software Foundation](https://www.aswf.io/projects).
 
+[RenderMan](https://renderman.pixar.com/product) is a renderer and application software ecosystem produced by [Pixar](https://www.pixar.com).
+
 # Requirements
 * [Pixar's RenderMan](https://renderman.pixar.com)
 
