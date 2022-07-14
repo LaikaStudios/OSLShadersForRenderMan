@@ -52,7 +52,9 @@ shader convert_SFEToNK
 {
     float square( float x ) { return x*x; }
 
-    // Artistic Friendly Metallic Fresnel, Gulbrandsen 2014
+    // Gulbrandsen, O. 2014
+    // Artist Friendly Metallic Fresnel
+    // Journal of Computer Graphics Techniques, Vol. 3, No. 4
     // http://jcgt.org/published/0003/04/03/
 
     float f0f90_to_eta( float f0, float f90 )
@@ -77,10 +79,11 @@ shader convert_SFEToNK
         return select( 1.0, k, isfinite(k) );
     }
 
-    // This is the pseudo-spectral portion, so yeah, fairly bogus.
+    // This is the pseudo-spectral portion, so it's fairly bogus.
     // In particular, the hue caused by simply using the rgb values
     // results in the hue being inverted in the edge response for
     // extreme (i.e. non-physical) color differences in f0 and f90.
+    // At any rate, it does work quite well in practice.
     color f0f90_to_eta( color f0, color f90 )
     {
         return color(
