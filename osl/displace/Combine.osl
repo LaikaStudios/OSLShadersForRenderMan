@@ -1,0 +1,91 @@
+/*
+ *  Copyright 2022 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+#define INPUT_PARAMS(N) \
+    vector Input##N##_Vector = vector(0.0) \
+    [[ \
+        string page = "Input " #N, \
+        string label = "Vector", \
+        string help = \
+            "The <b>Vector</b> value to be combined with the others. " \
+            "This can be a <b>DeltaP</b> value or a " \
+            "<b>SurfaceGradient</b> value, but all the " \
+            "Inputs must be the same type. " \
+    ]], \
+\
+    float Input##N##_Gain = 1.0 \
+    [[ \
+        string page = "Input " #N, \
+        string label = "Gain", \
+        int slider = 1, float slidermin = 0.0, float slidermax = 2.0, \
+        string help = \
+            "Pre-scales the Input <b>Vector</b>. " \
+    ]], \
+\
+    int Input##N##_Mode = 0 \
+    [[ \
+        string page = "Input " #N, \
+        string label = "Mode", \
+        string widget = "mapper", \
+        string options = "Add:0|Mix:1", \
+        string help = \
+            "<i>Add</i> (0) sums this Input with the others. " \
+            "<i>Mix</i> (1) blends this Input with the others, " \
+            "which is equivalent to an <i>over</i> compositing operation. " \
+    ]], \
+\
+    float Input##N##_Mask = 1.0 \
+    [[ \
+        string page = "Input " #N, \
+        string label = "Mask", \
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0, \
+        string help = \
+            "Determines how much of this Input to <i>Add</i> to the others, "\
+            "or controls the <i>Mix</i> between this Input and the others. " \
+    ]]
+
+#define COMBINE(N,RESULT) \
+    if( Input##N##_Mode == 1 ) \
+    { \
+        RESULT = mix( RESULT, Input##N##_Vector * Input##N##_Gain, Input##N##_Mask ); \
+    } \
+    else \
+    { \
+        RESULT += Input##N##_Vector * Input##N##_Gain * Input##N##_Mask; \
+    }
+
+shader displace_Combine
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Combines the Inputs, from the bottom up, using the specified "
+            "<b>Gain</b>, <b>Mode</b>, and <b>Mask</b> for each. "
+            "The <b>Vector</b> Inputs can be <b>DeltaP</b> values "
+            "or <b>SurfaceGradient</b> values, but they all "
+            "must be the same type. "
+    ]],
+
+    INPUT_PARAMS(5),
+    INPUT_PARAMS(4),
+    INPUT_PARAMS(3),
+    INPUT_PARAMS(2),
+    INPUT_PARAMS(1),
+    INPUT_PARAMS(0),
+
+    output vector  Out = vector(0.0)
+)
+{
+    COMBINE(0,Out);
+    COMBINE(1,Out);
+    COMBINE(2,Out);
+    COMBINE(3,Out);
+    COMBINE(4,Out);
+    COMBINE(5,Out);
+}

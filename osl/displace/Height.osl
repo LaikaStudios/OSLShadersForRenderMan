@@ -1,0 +1,109 @@
+/*
+ *  Copyright 2022 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader displace_Height
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Generates a <b>DeltaP</b> (Vector Displacement) "
+            "output from a <b>Height</b> value. "
+    ]],
+
+    float Height = 0.5
+    [[
+        string label = "Height",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "<b>Height</b> is used to displace the surface along its normal direction. "
+            "The <b>Height</b> value is assumed to range between 0 and 1, "
+            "so <b>Height</b> is first offset by &ndash;0.5 so it ranges "
+            "from &ndash;0.5 to +0.5 to produce balanced variations above "
+            "and below the surface. "
+    ]],
+
+    float Offset = 0.0
+    [[
+        string label = "Offset",
+        int slider = 1, float slidermin = -0.5, float slidermax = 0.5,
+        string help =
+            "The <b>Height</b> value is assumed to range between 0 and 1, "
+            "so <b>Height</b> is first offset by &ndash;0.5 so it ranges "
+            "from &ndash;0.5 to +0.5 to produce balanced variations above "
+            "and below the surface. "
+            "<p>"
+            "<b>Offset</b> is then added to this new <b>Height</b> value, "
+            "allowing you to generate only peaks (<b>Offset</b> = <i>+0.5</i> ), "
+            "a combination of peaks and valleys (<b>Offset</b> = <i>0.0</i> ), "
+            "or just valleys (<b>Offset</b> = <i>&ndash;0.5</i> ) "
+            "in the displaced surface. "
+            "</p>"
+    ]],
+
+    float Magnitude = 1.0
+    [[
+        string label = "Magnitude",
+        int slider = 1, float slidermin = 0.0, float slidermax = 2.0,
+        string help =
+            "Controls the <b>Magnitude</b> of the displacement. "
+    ]],
+
+    string MagnitudeSpace = "world"
+    [[
+        int connectable = 0,
+        string label = "Magnitude Space",
+        string widget = "popup", int editable = 1,
+        string options =
+            "object"
+            "|world",
+        string help =
+            "Determines in what <b>Space</b> the units of <b>Magnitude</b> are specified: "
+            "how big is 1 unit of <b>Magnitude</b> displacement?"
+    ]],
+
+    int Invert = 0
+    [[
+        int connectable = 0,
+        string label = "Invert",
+        string widget = "checkBox",
+        string help =
+            "<b>Invert</b> the displaced variation. "
+    ]],
+
+    output vector DeltaP = vector(0.0)
+)
+{
+    // Invert?
+    float  height = Height;
+    if( Invert ) height =  1.0-height;
+
+    // [0,1] Height value shifts the surface ±0.5, plus the Offset.
+    height = height-0.5 + Offset;
+
+    // Apply the Magnitude.
+    height *= Magnitude;
+
+    // Scale to common space.
+    matrix  mag_to_common;
+    if( getmatrix( MagnitudeSpace, "common", mag_to_common ))
+    {
+        height *= pow( abs( determinant( mag_to_common )), 0.33333333 );
+    }
+    else
+    {
+        warning(
+            "Magnitude Space = \"%s\" couldn't be found. "
+            "Using \"common\" space instead - that's not good. ",
+            MagnitudeSpace
+            );
+    }
+
+    // The change in the surface.
+    DeltaP = N*height;
+}

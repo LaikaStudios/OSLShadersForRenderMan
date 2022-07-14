@@ -1,0 +1,152 @@
+/*
+ *  Copyright 2022 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader convert_TangentMap
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "Converts a Tangent-space Normal Map or Vector Displacement Map "
+            "into a <b>DeltaP</b> displacement, or a shading <b>Normal</b> "
+            "or <b>SurfaceGradient</b> shading normal representation. "
+            "<p>"
+            "Note that Normal Maps and Vector Displacement Maps "
+            "are not interchangable: their texture data can be "
+            "used for one or the other, but not both. "
+            "</p>"
+    ]],
+
+    color RGB = color(0.0)
+    [[
+        string help =
+            "The Tangent-space Normal Map or Vector Displacement Map data. "
+    ]],
+
+    int ExpandRGB = 0
+    [[
+        int connectable = 0,
+        string label = "Expand RGB",
+        string widget = "checkBox",
+        string help =
+            "Tangent-space Normal or Vector Map data can either be "
+            "un-encoded (-1,1) ranged values, or encoded into (0,1) "
+            "ranged <b>RGB</b> values. "
+            "<p>"
+            "If your data contains no negative values, "
+            "you must <b>Expand</b> its <b>RGB</b> values. "
+            "<p/>"
+            "Typically, Normal Maps are encoded (and therefore must "
+            "be expanded), and Vector Displacement Maps are not "
+            "(and therefore don't need expansion). "
+    ]],
+
+    int Orientation = 0
+    [[
+        int connectable = 0,
+        string label = "Orientation",
+        string widget = "mapper",
+        string options = "OpenGL:0|DirectX:1|Custom:2",
+        string help =
+            "Different applications generate Tangent-space Maps "
+            "using different tangent and bi-tangent directions. "
+            "<b>Orientation</b> selects what standard directions to use, "
+            "or you can select <i>Custom</i> to manually control these. "
+    ]],
+
+    int InvertSProfile = 0
+    [[
+        int connectable = 0,
+        string label = "Invert S Profile",
+        string widget = "checkBox",
+        string conditionalVisPath = "../Orientation",
+        string conditionalVisOp = "equalTo",
+        string conditionalVisValue = "2",
+        string help =
+            "Invert the bump's profile along the S direction: "
+            "Concave -> convex and vice versa. "
+    ]],
+
+    int InvertTProfile = 0
+    [[
+        int connectable = 0,
+        string label = "Invert T Profile",
+        string widget = "checkBox",
+        string conditionalVisPath = "../Orientation",
+        string conditionalVisOp = "equalTo",
+        string conditionalVisValue = "2",
+        string help =
+            "Invert the bump's profile along the T direction: "
+            "Concave -> convex and vice versa. "
+    ]],
+
+    float Gain = 1.0
+    [[
+        string label = "Gain",
+        int slider = 1, float slidermin = 0.0, float slidermax = 2.0,
+        string help =
+            "Controls how much bumped appearance the resulting "
+            "shading <b>Normal</b> or <b>SurfaceGradient</b> will contain. "
+    ]],
+
+    output vector DeltaP = vector(0.0),
+    output normal Normal = normal(0.0),
+    output vector SurfaceGradient = vector(0.0)
+)
+{
+    // Tangent Map Data.
+    vector tmd = RGB;
+
+    // Decode the data: (0,1) -> (-1,1)
+    if( ExpandRGB ) tmd = 2.0*tmd - vector(1.0);
+
+    // Profile orientation.
+    if( Orientation == 1 ) // DirectX
+    {
+        tmd.y = -tmd.y;
+    }
+    else if( Orientation == 2 ) // Custom
+    {
+        if( InvertSProfile ) tmd.x = -tmd.x;
+        if( InvertTProfile ) tmd.y = -tmd.y;
+    }
+
+    // Profile depends on geometric orientation.
+    string  RiOrientation;
+    getattribute( "Ri:Orientation", RiOrientation );
+
+    if( RiOrientation != "inside" )
+    {
+        tmd.x = -tmd.x;
+        tmd.y = -tmd.y;
+    }
+
+    // Convert from tangent space to current space.
+    // -T & -B for orientation 'inside'.
+    vector T; getattribute( "builtin", "Tn", T );
+    vector B = cross( N, T );
+
+    // Tangent map to displacement.
+    DeltaP = -T * tmd.x +
+             -B * tmd.y +
+              N * tmd.z;
+
+    // Tangent (Normal) map to bump.
+    normal Nbump = DeltaP;
+
+    if( dot(Ng,Nbump) < 0.0 ) Nbump = -Nbump;
+
+    // Mikkelsen, M. 2020
+    // Surface Gradient–Based Bump Mapping Framework
+    // Journal of Computer Graphics Techniques, Vol. 9, No. 3
+    // https://jcgt.org/published/0009/03/04/
+    float  k = dot( N, Nbump );
+    SurfaceGradient = ( k*N - Nbump )/max( 1.0e-10, abs(k) ) * Gain;
+
+    Normal = normalize( N - SurfaceGradient );
+}

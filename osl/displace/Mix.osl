@@ -1,0 +1,47 @@
+/*
+ *  Copyright 2022 Laika, LLC. Authored by Mitch Prater.
+ *
+ *  Licensed under the Apache License Version 2.0 http://apache.org/licenses/LICENSE-2.0,
+ *  or the MIT license http://opensource.org/licenses/MIT, at your option.
+ *
+ *  This program may not be copied, modified, or distributed except according to those terms.
+ */
+shader displace_Mix
+(
+    string Notes = ""
+    [[
+        int connectable = 0,
+        string help =
+            "<b>Mix</b> between the <b>A</b> and <b>B</b> "
+            "input vectors based on the <b>Blend</b> value. "
+            "The vector inputs can be <b>DeltaP</b> values "
+            "or <b>SurfaceGradient</b> values, but they both "
+            "must be the same type. "
+    ]],
+
+    vector A = vector(0.0)
+    [[
+        string help =
+            "One vector value to mix with the other. "
+    ]],
+
+    vector B = vector(0.0)
+    [[
+        string help =
+            "One vector value to mix with the other. "
+    ]],
+
+    float Blend = 0.5
+    [[
+        string label = "Blend",
+        int slider = 1, float slidermin = 0.0, float slidermax = 1.0,
+        string help =
+            "Controls the linear <b>Blend</b> between the "
+            "<b>A</b> (<i>0</i> ) and <b>B</b> (<i>1</i> ) inputs. "
+    ]],
+
+    output vector Out = vector(0.0)
+)
+{
+    Out = mix( A, B, Blend );
+}

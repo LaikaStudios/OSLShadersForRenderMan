@@ -1,0 +1,9 @@
+*.pdf
+*.pyc
+*.swp
+*.app
+*.so
+*.o
+*.oso
+./build
+*.m4
