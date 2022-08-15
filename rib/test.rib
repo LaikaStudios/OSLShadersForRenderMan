@@ -1,0 +1,74 @@
+##RenderMan RIB
+# RenderMan 24.4 build 2226585
+version 3.04999995
+Option "ribparse" "string varsubst" [""]
+Option "ribparse" "string varsubst" ["$"]
+Option "Ri" "float[4] CropWindow" [0 1 0 1] "float FormatPixelAspectRatio" [1] "int[2] FormatResolution" [587 392] "int Frame" [1] "float[2] Shutter" [0 0] "string DefaultDicingCamera" ["/root/world/cam/main/camera"]
+Option "hider" "int incremental" [1] "string type" ["raytrace"]
+
+Option "searchpath"
+"string display" ["${PIXAR_ROOT}/RenderManProServer-${RMAN_VERSION}/lib/plugins"]
+"string procedural" ["${PIXAR_ROOT}/RenderManProServer-${RMAN_VERSION}/lib/plugins"]
+"string rixplugin" ["${PIXAR_ROOT}/RenderManProServer-${RMAN_VERSION}/lib/plugins"]
+"string shader" ["${RMAN_SHADERPATH}"]
+
+Option "trace" "string worldorigin" ["worldoffset"] "float[3] worldoffset" [0 15 30]
+Integrator "PxrPathTracer" "integrator" 
+DisplayChannel "float a" 
+DisplayChannel "color Ci" 
+DisplayChannel "int id" "string filter" ["zmin"]
+DisplayChannel "int id2" "string filter" ["zmin"]
+Projection "PxrPerspective" "float fov" [30]
+Transform [ 1 -0 -0 -0  -0 0.965925872 -0.258819073 -0  -0 -0.258819073 -0.965925872 0  -0 -0 -0 1 ]
+Camera "/root/world/cam/main/camera" "float[4] Ri:ScreenWindow" [-1.49744892 1.49744892 -1 1] "float farClip" [100000] "float nearClip" [0.100000001]
+Display "test.exr" "framebuffer" "Ci,a" "string mode" ["Ci,a"] "int asrgba" [1] "string camera" ["/root/world/cam/main/camera"]
+
+WorldBegin 
+
+# Shader declaration
+AttributeBegin 
+Pattern "pattern_FractalNoise" "pattern_FractalNoise" "string Type" ["uperlin"]
+Bxdf "LamaDiffuse" "LamaDiffuse" "reference color color" ["pattern_FractalNoise:Color"]
+Bxdf "LamaSurface" "LamaSurface" "reference bxdf materialFront" ["LamaDiffuse"] "reference bxdf materialBack" ["LamaDiffuse"] "string __materialid" ["/root/materials/NetworkMaterial"]
+AttributeEnd 
+
+# Object declaration
+ObjectBegin "d147907e-1cd6-11ed-b4d4-b07b251983b9" 
+Attribute "dice" "float micropolygonlength" [1] "int watertight" [0]
+Attribute "displacementbound" "int offscreen" [0] "float sphere" [0.100000001] "string coordinatesystem" ["object"]
+Attribute "identifier" "string object" ["teapot"]
+Translate 0 3 0
+Scale 3 3 3
+Rotate -90 1 0 0
+Geometry "teapot"
+ObjectEnd 
+
+# Instance the object plus its shader in the scene.
+AttributeBegin 
+Attribute "identifier" "string name" ["/root/world/geo/teapot"] "int id" [-146968368] "int id2" [250466721]
+Attribute "lighting" "int mute" [0] "string excludesubset" [""]
+Attribute "user" "string __materialid" ["/root/materials/NetworkMaterial__hsahscmdk2byu2hinrkvczj77y"]
+Attribute "visibility" "int camera" [1] "int indirect" [1] "int transmission" [1]
+Bxdf "LamaSurface" "LamaSurface" "string __materialid" ["/root/materials/NetworkMaterial"]
+Transform [ 1 0 0 0  0 1 0 0  0 0 1 0  0 -15 -30 1 ]
+ObjectInstance "d147907e-1cd6-11ed-b4d4-b07b251983b9" 
+AttributeEnd 
+
+# Light declaration
+ObjectBegin "d14797ae-1cd6-11ed-b4d4-b07b251983b9" 
+Transform [ 0 0 -1 0  -1 0 0 0  0 1 0 0  0 0 0 1 ]
+Light "PxrDomeLight" "terminal.Light"
+ObjectEnd 
+
+# Instance the light in the scene.
+AttributeBegin 
+Attribute "grouping" "string membership" ["/root/world/lgt/gaffer/PxrDomeLight"]
+Attribute "identifier" "string name" ["/root/world/lgt/gaffer/PxrDomeLight"]
+Attribute "lighting" "int mute" [0] "string excludesubset" [""]
+Attribute "user" "string __materialid" ["__fcwyajidkbrpy3la7kydjzkoou"]
+Attribute "visibility" "int camera" [0] "int indirect" [1] "int transmission" [1]
+Transform [ 1 0 0 0  0 1 0 0  0 0 1 0  0 -15 -30 1 ]
+ObjectInstance "d14797ae-1cd6-11ed-b4d4-b07b251983b9" 
+AttributeEnd 
+
+WorldEnd 

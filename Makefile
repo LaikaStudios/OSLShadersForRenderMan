@@ -101,6 +101,11 @@ clean : clean_subdirs
 
 endif
 
+#
+# Test render.
+#
+testrender :
+	prman $(SRCDIR)/rib/test.rib
 
 #
 # Helpful rules.
@@ -124,3 +129,6 @@ help :
 	@ echo "DSTDIR:     $(DSTDIR)"
 	@ echo "SUBDIRS:    $(SUBDIRS)"
 	@ echo "------------------------------------------------------------------------"
+	@ echo "Once the shaders have been built, you can run"
+	@ echo "make testrender"
+	@ echo "to render a test image of a teapot with pattern_FractaNoise on it."
