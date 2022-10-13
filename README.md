@@ -44,7 +44,6 @@ Once built, the shaders can be used in [RenderMan](https://rmanwiki.pixar.com/di
 
 For example, if you downloaded or cloned this repository to `$HOME/OSLShadersForRenderMan`, then using `bash` shell:
 ```bash
-export RMAN_RIXPLUGINPATH="$HOME/OSLShadersForRenderMan/build/$RMAN_VERSION/plugins:$RMAN_RIXPLUGINPATH"
 export RMAN_SHADERPATH="$HOME/OSLShadersForRenderMan/build/$RMAN_VERSION/shaders:$RMAN_SHADERPATH"
 ```
 so that RenderMan will find these shaders, along with those supplied by Pixar.
