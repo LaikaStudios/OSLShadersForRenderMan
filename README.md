@@ -7,6 +7,8 @@
 
 # Requirements
 * [Pixar's RenderMan](https://renderman.pixar.com)
+* Gnu `make` command.
+* python3
 
 # Instructions
 1. Set up RenderMan:
@@ -20,12 +22,13 @@
     * RMAN_VERSION
 
     For example, if your version of RenderManProServer is installed in
-    `/opt/pixar/RenderManProServer-24.4`, then:
+    `/opt/pixar/RenderManProServer-24.4`, then using `bash` shell:
 
-    ```shell
-    PIXAR_ROOT = /opt/pixar
-    RMAN_VERSION = 24.4
+    ```bash
+    export PIXAR_ROOT="/opt/pixar"
+    export RMAN_VERSION="24.4"
     ```
+
 1. Download or [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this repository.
 1. `cd` into the dowloaded or cloned repository's directory.
 
@@ -39,13 +42,16 @@ In this way, you can edit a .osl file and execute `make` from the osl directory 
 
 Once built, the shaders can be used in [RenderMan](https://rmanwiki.pixar.com/display/REN24/RenderMan) or a [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) by setting the RMAN_SHADERPATH environment variable to include the location of the built shaders.
 
-For example, if you downloaded or cloned this repository to `$HOME/OSLShadersForRenderMan`, then set
-```shell
-RMAN_SHADERPATH = "$(HOME)/OSLShadersForRenderMan/build/$(RMAN_VERSION)/shaders:$(RMAN_SHADERPATH)"
+For example, if you downloaded or cloned this repository to `$HOME/OSLShadersForRenderMan`, then using `bash` shell:
+```bash
+export RMAN_RIXPLUGINPATH="$HOME/OSLShadersForRenderMan/build/$RMAN_VERSION/plugins:$RMAN_RIXPLUGINPATH"
+export RMAN_SHADERPATH="$HOME/OSLShadersForRenderMan/build/$RMAN_VERSION/shaders:$RMAN_SHADERPATH"
 ```
-so that RenderMan will find these shaders, along with the Pixar shaders.
+so that RenderMan will find these shaders, along with those supplied by Pixar.
 
-Note that [RenderMan for Maya](https://rmanwiki.pixar.com/display/RFM24) requires additional setup to use [Custom Shading Nodes](https://rmanwiki.pixar.com/display/RFM24/Installing+Custom+Nodes).
+Note that the top-level `make` directory spoken about in the course has been renamed `python3` to reflect its contents.
+
+Also note that [RenderMan for Maya](https://rmanwiki.pixar.com/display/RFM24) requires additional setup to use [Custom Shading Nodes](https://rmanwiki.pixar.com/display/RFM24/Installing+Custom+Nodes).
 
 # License
 Licensed under either of

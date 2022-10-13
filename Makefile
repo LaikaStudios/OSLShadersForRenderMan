@@ -6,6 +6,8 @@
 # 
 #   This program may not be copied, modified, or distributed except according to those terms.
 #
+
+#
 # PIXAR_ROOT must be set to the location of the
 # RenderMan installation: e.g. /opt/pixar
 #
@@ -33,8 +35,8 @@ SUBDIRS := osl
 SRCDIR ?= $(CURDIR)
 export SRCDIR
 
-MAKEDIR ?= $(SRCDIR)/make
-export MAKEDIR
+PYTHONDIR ?= $(SRCDIR)/python3
+export PYTHONDIR
 
 # Build destination. This is where the made files end up.
 DSTDIR ?= $(SRCDIR)/build
@@ -88,13 +90,15 @@ subdirs: $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
+
+# Cleans the subdirectories.
 CLEAN_SUBDIRS = $(addprefix clean_, $(SUBDIRS))
 
 clean_subdirs : $(CLEAN_SUBDIRS)
 $(CLEAN_SUBDIRS):
 	$(MAKE) -C $(subst clean_,,$@) clean_local
 
-# Cleans the subdirectories and nukes the build directory.
+# Top-level clean also nukes the build directory.
 clean : clean_subdirs
 	@ echo "make clean."
 	@ -rm -rf $(SRCDIR)/build
@@ -125,7 +129,7 @@ help :
 	@ echo "RMAN_VERSION:  $(RMAN_VERSION)"
 	@ echo "rman_versions: $(rman_versions)"
 	@ echo "SRCDIR:     $(SRCDIR)"
-	@ echo "MAKEDIR:    $(MAKEDIR)"
+	@ echo "PYTHONDIR:  $(PYTHONDIR)"
 	@ echo "DSTDIR:     $(DSTDIR)"
 	@ echo "SUBDIRS:    $(SUBDIRS)"
 	@ echo "------------------------------------------------------------------------"

@@ -6,6 +6,8 @@
 # 
 #   This program may not be copied, modified, or distributed except according to those terms.
 #
+
+#
 # PIXAR_ROOT and RMAN_VERSION are required to be set.
 #
 ifndef PIXAR_ROOT
@@ -45,18 +47,16 @@ EXCLUDE := $(addsuffix .osl, $(EXCLUDE))
 src := $(filter-out $(EXCLUDE), $(src))
 oso := $(src:%.osl=%.oso)
 
-# make directory include files.
+# Relevant make system directories.
 SRCDIR ?= ..
-MAKEDIR ?= $(SRCDIR)/make
+PYTHONDIR ?= $(SRCDIR)/python3
 
 # Location to install the flattened shaders:
 # $(SRCDIR)/build/
-# ├── 24.4
-# │   └── shaders
-# │       ├── flattened_ShaderName.oso
-# │       └── ...
-# └── 24.5
-#     └── ...
+# └── $(RMAN_VERSION)
+#     └── shaders
+#         ├── flattened_ShaderName.oso
+#         └── ...
 DSTDIR ?= $(SRCDIR)/build
 install_dir := $(DSTDIR)/${RMAN_VERSION}/shaders
 
@@ -71,7 +71,7 @@ install_dir := $(DSTDIR)/${RMAN_VERSION}/shaders
 # The default target's prerequisites.
 all : install $(oso)
 
-# The installation requires the $(install_dir) to exist.
+# The installation requires $(install_dir) to exist.
 install : $(install_dir)
 
 # Don't worry if $(install_dir) already exists, just make it.
@@ -83,6 +83,7 @@ $(install_dir) :
 #
 CC = ${RMANTREE}/bin/oslc
 CFLAGS = 
+
 INCLUDE = -I. -I./include
 
 #
@@ -92,15 +93,12 @@ INCLUDE = -I. -I./include
 # Individual dependencies: e.g.
 # pattern/Worley.oso: pattern/worley.h
 
-# Make the .oso file in-place and copy it to the
-# $(install_dir) using its flattened file name.
-# SRCDIR = .. when this Makefile is executed locally.
 %.oso : %.osl
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ $<
 ifeq ($(SRCDIR),..)
-	env python3 $(MAKEDIR)/install_shaders.py --copy $(install_dir) $@
+	env python3 $(PYTHONDIR)/install_shaders.py --copy $(install_dir) $@
 else
-	env python3 $(MAKEDIR)/install_shaders.py $(install_dir) $@
+	env python3 $(PYTHONDIR)/install_shaders.py $(install_dir) $@
 endif
 
 
@@ -130,7 +128,7 @@ help:
 	@ echo "RMAN_VERSION: $(RMAN_VERSION)"
 	@ echo "RMANTREE:   $(RMANTREE)"
 	@ echo "CURDIR:     $(CURDIR)"
-	@ echo "MAKEDIR:    $(MAKEDIR)"
+	@ echo "PYTHONDIR:  $(PYTHONDIR)"
 	@ echo "DSTDIR:     $(DSTDIR)"
 	@ echo "build dir:  $(install_dir)"
 	@ echo "------------------------------------------------------------------------"
