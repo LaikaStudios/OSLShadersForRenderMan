@@ -7,8 +7,8 @@
 
 # Requirements
 * [Pixar's RenderMan](https://renderman.pixar.com)
-* Gnu `make` command.
-* python3
+* `make` command.
+* `python3`
 
 # Instructions
 1. Set up RenderMan:
@@ -28,6 +28,12 @@
     export PIXAR_ROOT="/opt/pixar"
     export RMAN_VERSION="24.4"
     ```
+    
+    RenderManProServer also requires an RMANTREE environment variable to be set to its installation location:
+    
+    ```bash
+    export RMANTREE="${PIXAR_ROOT}/RenderManProServer-${RMAN_VERSION}"
+    ```
 
 1. Download or [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this repository.
 1. `cd` into the dowloaded or cloned repository's directory.
@@ -42,9 +48,9 @@ In this way, you can edit a .osl file and execute `make` from the osl directory 
 
 Once built, the shaders can be used in [RenderMan](https://rmanwiki.pixar.com/display/REN24/RenderMan) or a [RenderMan Bridge Application](https://renderman.pixar.com/bridge-tools) by setting the RMAN_SHADERPATH environment variable to include the location of the built shaders.
 
-For example, if you downloaded or cloned this repository to `$HOME/OSLShadersForRenderMan`, then using `bash` shell:
+For example, if you downloaded or cloned this repository to `${HOME}/OSLShadersForRenderMan`, then using `bash` shell:
 ```bash
-export RMAN_SHADERPATH="$HOME/OSLShadersForRenderMan/build/$RMAN_VERSION/shaders:$RMAN_SHADERPATH"
+export RMAN_SHADERPATH="${HOME}/OSLShadersForRenderMan/build/${RMAN_VERSION}/shaders:${RMAN_SHADERPATH}"
 ```
 so that RenderMan will find these shaders, along with those supplied by Pixar.
 
