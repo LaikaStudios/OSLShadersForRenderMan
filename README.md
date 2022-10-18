@@ -7,7 +7,7 @@
 
 # Requirements
 * [Pixar's RenderMan](https://renderman.pixar.com)
-* `make` command.
+* `make`
 * `python3`
 
 # Instructions
