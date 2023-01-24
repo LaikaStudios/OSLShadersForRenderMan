@@ -1,5 +1,5 @@
 # OSLShadersForRenderMan
-[Siggraph 2022 Course](https://s2022.siggraph.org/presentation/?id=gensub_113&sess=sess204) Supplementary Material.
+[Siggraph 2022 Course Supplementary Material](https://dl.acm.org/doi/abs/10.1145/3532724.3535604).
 
 [Open Shading Language](https://github.com/AcademySoftwareFoundation/OpenShadingLanguage) is a project of the [Academy Software Foundation](https://www.aswf.io/projects).
 
